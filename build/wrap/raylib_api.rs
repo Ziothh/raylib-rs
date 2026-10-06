@@ -33,9 +33,13 @@ pub struct RayLibApiDefinition {
 
 impl RayLibApiDefinition {
     pub fn load(file_path: &str) -> Result<Self, Box<dyn Error>> {
-        let file = std::fs::File::open(file_path)?;
-        let reader = std::io::BufReader::new(file);
-        let api = serde_json::from_reader(reader)?;
+        let contents = std::fs::read_to_string(file_path)?;
+        // raylib 6.0's bundled JSON leaves the quotes in this description unescaped.
+        let contents = contents.replace(
+            r#"some filters available: "*.*", "FILES*", "DIRS*""#,
+            r#"some filters available: \"*.*\", \"FILES*\", \"DIRS*\""#,
+        );
+        let api = serde_json::from_str(&contents)?;
         Ok(api)
     }
 }

@@ -17,7 +17,9 @@ pub fn main() {
     bind::generate_bindings("src/wrapper.h");
 
     // Load the API definitions
-    let api_defs = RayLibApiDefinition::load("third_party/raylib/parser/output/raylib_api.json").unwrap();
+    let api_path = "third_party/raylib/tools/rlparser/output/raylib_api.json";
+    println!("cargo:rerun-if-changed={api_path}");
+    let api_defs = RayLibApiDefinition::load(api_path).unwrap();
 
     // Generate safe wrappers
     wrap_exposed_enums(api_defs.clone());
